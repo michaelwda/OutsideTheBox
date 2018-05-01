@@ -1,0 +1,6 @@
+﻿<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="OTB.ClientUI" Width="200" Height="100" Background="LightGray">
+  <TextBlock Margin="60, 20">Connecting ...</TextBlock>
+  
+</Window>

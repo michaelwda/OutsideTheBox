@@ -1,0 +1,37 @@
+BUGS
+ 1) From OSX, I can't drag a selection box on windows. Something going on there with mouse events? 
+ 2) Some weird windows DPI issues.
+ 3) Clipboard copy not working for unicode / images
+ 4) Clipboard copy not implemented on OSX hook. There's no OS level hook, so we'll need to poll. Garbage.
+ 5) SOMETIMES there's a little bit of stickiness when scrolling along an edge of a virtual screen. Investigate?
+ 6) We need a fail-safe bailout. Like we're receiving hook input but we're trapped somewhere?
+ 7) Pressing a windows key and then a hotkey. when releasing the winkey on remote pc, it pops up the windows menu. Instead, this keystroke should be eaten. 
+ 8) dragging the mouse on fullscreen text and then we flip over to the other monitor causes the text selection to go wonky. Perhaps if i'm dragging we don't hide the mouse in the bottom right? this is what's causing the breakage.
+ 9) Sometimes mouse buttons / keypresses get stuck. I should likely implement a backgroundworker to sync expected keystate using GetKeyboardState.
+ 10) Mouse move on windows didn't initiate a hover when right clicking visual studio to start a particular project. Usually the project you're about to click will gain a hover state?
+ 11) Can't wake windows screen up by moving onto it. 
+ 12) I hate the scroll on osx. Can we make it smoother? We probably need to translate the clicks from windows to OSX into some standardized unit...
+ 13) There's a lot of really nasty globals in a static class. Probably not thread-safe and makes the code untestable. Refactor.
+ 14) We need unit tests on isolated components. Not sure how to test OS-level hooks, but we may be able to test a few things
+ 15) In OSXGlobalHook - I am referencing the virtualX and virtualY from my static globals to new coordinates
+ using mouse deltas. We may consider changing the signature of the delegate to pass the delta instead of
+ the coordinates. Or perhaps have two signatures. One for deltas, one for absolute. This would keep using from having to
+ use the globals in our hook code and keep it a little purer.
+
+
+FEATURES TODO
+-Id love to split my hook code out into a seperate library.
+-Setting up the screens is a pain. Need a way to configure the windows. Either client based desktop apps, or maybe a browser based portal?
+-Running as root, don't see a way around it
+-Need to figure out how to create an installer for OSX/Windows. Can I write a gui in avalonia?
+-Add a windows service host and a macos daemon host. We could temporarily just have it be a user-mode app that's running minimized.
+-wrap around screens???
+-screen lock / jailing
+-Can we sync caps lock. How to turn on LEDs??
+-customize hotkeys
+-investigate the avalonia code around keys / keypresses. Is it a better fit than opentk???
+-Once DNC 2.1 comes out and the new signalr, we will implement real TCP sockets instead of http.
+-Right now we have client/server tiers split. What would it take to have them both fire up, per client, and then orchestrate which client was the current master / slave?
+- Perhaps each client would have a local server. all local hook input would go to the local server, and then get replayed...all clients would maintain a connection to each host in a mesh?
+
+ 
