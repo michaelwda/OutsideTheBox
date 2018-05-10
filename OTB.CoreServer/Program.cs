@@ -33,9 +33,8 @@ namespace OTB.CoreServer
             var host = new WebHostBuilder()
                 .UseConfiguration(config)
                 .UseSetting(WebHostDefaults.PreventHostingStartupKey, "true")
-                 .ConfigureLogging((hostingContext, logging) =>
+                 .ConfigureLogging(logging =>
                  {
-                     logging.AddConfiguration(hostingContext.Configuration.GetSection("Logging"));
                      logging.SetMinimumLevel(LogLevel.Debug);
                      logging.AddConsole();
                    

@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.SignalR.Client;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace OTB.Core
 {
@@ -17,17 +19,19 @@ namespace OTB.Core
             HubConnection = new HubConnectionBuilder()
                 //.WithEndPoint(endpoint) //TCP endpoint coming soon. I don't feel like building from dev branch.
                 .WithUrl(serverAddress)
-                .WithMessagePackProtocol()
+                .AddMessagePackProtocol()
                 .Build();
             
             HubConnection.Closed+=HubConnectionOnClosed;
           
         }
 
-        private void HubConnectionOnClosed(Exception exception)
+        private Task HubConnectionOnClosed(Exception arg)
         {
             _connected = false;
+            return Task.CompletedTask;
         }
+
 
         public void Start()
         {
@@ -50,10 +54,10 @@ namespace OTB.Core
         }
 
 
-        public void Stop()
+        public async Task Stop()
         {
             _connected = false;
-            HubConnection.StopAsync();
+            await HubConnection.StopAsync();
             
         }
 

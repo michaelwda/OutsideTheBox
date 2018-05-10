@@ -45,7 +45,7 @@ namespace OTB.Core
             _receiver=new ServerEventReceiver(_connection, _hook, _screen);
 
             ClientState.Logger = new LoggerFactory().AddConsole(LogLevel.Debug).CreateLogger("OTB");
-          
+ 
         }
 
         public bool Start()

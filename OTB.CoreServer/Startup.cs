@@ -12,14 +12,8 @@ namespace OTB.CoreServer{
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddConnections();
-
-            services.AddSignalR(options =>
-            { 
-                // Faster pings for testing
-                options.KeepAliveInterval = TimeSpan.FromSeconds(5);
-			})
-            .AddMessagePackProtocol();
-            //.AddRedis();
+            services.AddSignalR(option => { option.KeepAliveInterval = TimeSpan.FromSeconds(5); }).AddMessagePackProtocol();
+             
 
         
 
