@@ -7,7 +7,6 @@ using Microsoft.AspNetCore.Connections;
 using Microsoft.AspNetCore.Http.Connections;
 using Microsoft.AspNetCore.Http.Connections.Features;
 
-
 namespace OTB.CoreServer.ConnectionHandlers
 {
     public class MessagesConnectionHandler : ConnectionHandler

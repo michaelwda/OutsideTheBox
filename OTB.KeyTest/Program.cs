@@ -12,7 +12,7 @@ namespace OTB.KeyTest
             var dispatcher = new ServerEventDispatcher(connection);
             var screen = new VirtualScreenManager();
             var hook = new HookManager(dispatcher, screen);
-            ClientState.Logger = new LoggerFactory().AddConsole(LogLevel.Debug).CreateLogger("OTB");
+            ClientState.Logger = LoggerFactory.Create(builder=>builder.AddConsole().SetMinimumLevel(LogLevel.Warning)).CreateLogger("OTB");
             hook.Start();
 
             hook.Hook.SendKeyDown(Core.Hook.Key.WinLeft);

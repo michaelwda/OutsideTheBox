@@ -9,9 +9,7 @@ using OTB.Core.Hook;
 
 namespace OTB.CoreServer
 {
-	
- 
-	public class OTBHub : DynamicHub
+    public class OTBHub : DynamicHub
     {
         private readonly ILogger _logger;
 
@@ -22,7 +20,6 @@ namespace OTB.CoreServer
 
         public override async Task OnConnectedAsync()
         {
-           
         }
 
         public override async Task OnDisconnectedAsync(Exception ex)

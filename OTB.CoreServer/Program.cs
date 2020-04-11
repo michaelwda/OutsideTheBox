@@ -12,7 +12,9 @@ using System.Text;
 using System.Net.Sockets;
 using System.Threading;
 using System.Net.NetworkInformation;
-using System.Collections.Generic;
+using System.Security;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 
 namespace OTB.CoreServer
 {
@@ -24,7 +26,6 @@ namespace OTB.CoreServer
         {
             UdpDiscoveryBroadcaster = new BackgroundWorker();
             UdpDiscoveryBroadcaster.DoWork += UdpDiscoveryBroadcaster_DoWork;
-            
 
             var config = new ConfigurationBuilder()
                 .AddCommandLine(args)
@@ -35,7 +36,7 @@ namespace OTB.CoreServer
                 .UseSetting(WebHostDefaults.PreventHostingStartupKey, "true")
                  .ConfigureLogging(logging =>
                  {
-                     logging.SetMinimumLevel(LogLevel.Debug);
+                     logging.SetMinimumLevel(LogLevel.Information);
                      logging.AddConsole();
                    
                  })
@@ -43,15 +44,8 @@ namespace OTB.CoreServer
                 {
                     // Default port
                     options.ListenAnyIP(8088);
-                    
-                    //// Hub bound to TCP end point
-                    //options.Listen(IPAddress.Any, 8088, builder =>
-                    //{                                     
-                    //    builder.UseHub<OTBHub>();
-                    //});
                 })
                 .UseContentRoot(Directory.GetCurrentDirectory())
-                //.UseIISIntegration()
                 .UseStartup<Startup>()
                 .Build();
 
@@ -63,11 +57,6 @@ namespace OTB.CoreServer
 
         private static void UdpDiscoveryBroadcaster_DoWork(object sender, DoWorkEventArgs e)
         {
-
-            
-           
-
-
             while (true)
             {
                 Socket s = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
@@ -98,10 +87,6 @@ namespace OTB.CoreServer
                         }
                     }
                 }
-               
-               
-
-             
                 Thread.Sleep(5000);
             }
             
