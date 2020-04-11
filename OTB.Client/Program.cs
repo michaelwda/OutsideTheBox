@@ -14,11 +14,9 @@ namespace OTB.Client
     class Program
     {
         private const int discoveryPort=11000;
-        
         private static OTBClient client;
         static void Main(string[] args)
         {
-
             //find server via UDP broadcast
             bool done = false;
             string otpip = "";
@@ -31,7 +29,6 @@ namespace OTB.Client
                     Console.WriteLine("Waiting for server");
                     byte[] bytes = listener.Receive(ref groupEP);
 
-                   
                     var ipAddress = new IPAddress(bytes);
                     otpip = "http://" + ipAddress + ":8088/OTB";
                     done = true;                    
@@ -47,7 +44,6 @@ namespace OTB.Client
                 listener.Close();
             }
 
-
             OTBClient client = new OTBClient(otpip);
             if (client.Start())
             {
@@ -59,7 +55,6 @@ namespace OTB.Client
         private static void ServerDiscovery_DoWork(object sender, DoWorkEventArgs e)
         {
 
-           
         }
     }
 

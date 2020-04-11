@@ -22,17 +22,11 @@ namespace OTB.Core
 {
     public class OTBClient : IDisposable
     {
-      
-
-  
         private HookManager _hook;
-       
         private ServerConnectionManager _connection;
         private ServerEventDispatcher _dispatcher;
         private ServerEventReceiver _receiver;
         private VirtualScreenManager _screen;
-
-        
         public OTBClient(string serverAddress)
         {
             ClientState.ClientName = Environment.MachineName;
@@ -41,11 +35,9 @@ namespace OTB.Core
             _dispatcher=new ServerEventDispatcher(_connection);
             _screen=new VirtualScreenManager(); 
             _hook=new HookManager(_dispatcher, _screen);
-            
             _receiver=new ServerEventReceiver(_connection, _hook, _screen);
 
-            ClientState.Logger = new LoggerFactory().AddConsole(LogLevel.Debug).CreateLogger("OTB");
- 
+            ClientState.Logger = LoggerFactory.Create(builder => builder.AddConsole()).CreateLogger("OTB");
         }
 
         public bool Start()
@@ -59,12 +51,8 @@ namespace OTB.Core
             {
                 s=ClientState.ScreenConfiguration.AddScreen(display.X, display.Y, display.X, display.Y, display.Width, display.Height, ClientState.ClientName,"");
             }
-               
             _dispatcher.ClientCheckin(ClientState.ClientName, ClientState.ScreenConfiguration.Screens.Values.SelectMany(x=>x).ToList());
-             
             _hook.Hook.SetMousePos(ClientState._lastPositionX, ClientState._lastPositionY);
-            
-
             _hook.Start();
                 
             return true;
@@ -83,7 +71,6 @@ namespace OTB.Core
 
         public void RunMessageLoop()
         {
-            
             //Windows needs a message pump
             if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
             {
@@ -97,7 +84,6 @@ namespace OTB.Core
             if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
             {
                 //Cocoa run loop
-                
                 var runLoop = CF.CFRunLoopGetMain();
                 if (runLoop == IntPtr.Zero)
                 {
@@ -105,7 +91,6 @@ namespace OTB.Core
                 }
                 if (runLoop == IntPtr.Zero)
                 {
-
                     throw new InvalidOperationException();
                 }
 
@@ -118,11 +103,8 @@ namespace OTB.Core
             }
         }
 
-       
-
         public void Dispose()
         {
-            
             _hook?.Dispose();
 			_connection?.Dispose();
         }

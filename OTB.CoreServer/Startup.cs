@@ -2,35 +2,31 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using OTB.CoreServer.ConnectionHandlers;
 
 namespace OTB.CoreServer{
 	public class Startup
     {
-        // This method gets called by the runtime. Use this method to add services to the container.
-        // For more information on how to configure your application, visit http://go.microsoft.com/fwlink/?LinkID=398940
         public void ConfigureServices(IServiceCollection services)
         {
+            
             services.AddConnections();
             services.AddSignalR(option => { option.KeepAliveInterval = TimeSpan.FromSeconds(5); }).AddMessagePackProtocol();
-             
-
-        
-
             services.AddCors(o =>
             {
                 o.AddPolicy("Everything", p =>
                 {
                     p.AllowAnyHeader()
-                     .AllowAnyMethod()
-                     .AllowAnyOrigin()
-                     .AllowCredentials();
+                        .AllowAnyMethod()
+                        .AllowAnyOrigin();
                 });
             });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             app.UseFileServer();
 
@@ -38,19 +34,15 @@ namespace OTB.CoreServer{
             {
                 app.UseDeveloperExceptionPage();
             }
-
+            app.UseRouting();
             app.UseCors("Everything");
-             
-            app.UseSignalR(routes =>
+            app.UseEndpoints(endpoints =>
             {
-				routes.MapHub<OTBHub>("/OTB");
-             
-            });
-            app.UseConnections(routes =>
-            {
-                routes.MapConnectionHandler<MessagesConnectionHandler>("/OTB");
-            });
+                endpoints.MapHub<OTBHub>("/OTB");
 
+                //endpoints.MapConnectionHandler<MessagesConnectionHandler>("/OTB");
+            });
+          
         }
 
         
