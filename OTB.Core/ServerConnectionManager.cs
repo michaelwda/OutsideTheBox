@@ -42,7 +42,6 @@ namespace OTB.Core
                     Console.WriteLine("There was an error opening the connection:{0}",
                         task.Exception.GetBaseException());
 
-                    
                 }
                 else
                 {
