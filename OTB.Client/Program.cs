@@ -13,7 +13,6 @@ using OTB.Core;
 using OTB.Core.Hook;
 using OTB.Core.Hook.Platform.OSX;
 using OTB.Core.Hook.Platform.OSX.Native;
-using OTB.CoreServer;
 
 namespace OTB.Client
 {

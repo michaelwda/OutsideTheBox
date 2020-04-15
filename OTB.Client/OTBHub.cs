@@ -7,12 +7,12 @@ using Microsoft.Extensions.Logging;
 using OTB.Core;
 using OTB.Core.Hook;
 
-namespace OTB.CoreServer
+namespace OTB.Client
 {
-    public class OTBHub : DynamicHub
+    public class OTBHub : Hub<IOTBClient>
     {
         private readonly ILogger _logger;
-
+        static readonly ScreenConfiguration _screenConfiguration = new ScreenConfiguration();
         public OTBHub(ILoggerFactory logger)
         {
             _logger = logger.CreateLogger("Hub");
@@ -20,22 +20,18 @@ namespace OTB.CoreServer
 
         public override async Task OnConnectedAsync()
         {
+            Console.WriteLine("Connected!");
         }
 
         public override async Task OnDisconnectedAsync(Exception ex)
         {
             var screens=_screenConfiguration.GetScreensForConnection(Context.ConnectionId).ToList();
-            foreach(VirtualScreen s in screens)
+            foreach(var s in screens)
             {
                 _screenConfiguration.Remove(s);
             }
             await Clients.All.ScreenConfigUpdate(_screenConfiguration.Screens.Values.SelectMany(x => x).ToList());
         }
-
-        
-
-        static ScreenConfiguration _screenConfiguration = new ScreenConfiguration();
-         
 
         public Task Clipboard(string value)
         {
@@ -52,13 +48,11 @@ namespace OTB.CoreServer
         }
 		public Task MouseDown(MouseButton button)
         {
-         
-			return Clients.Others.MouseDown(button);
+            return Clients.Others.MouseDown(button);
         }
 		public Task MouseUp(MouseButton button)
         {
-          
-			return Clients.Others.MouseUp(button);
+            return Clients.Others.MouseUp(button);
         }
 		public Task KeyDown(Key key)
         {
@@ -71,7 +65,7 @@ namespace OTB.CoreServer
 
         //we have multiple monitors for a client. 
         //we may want to remove a single monitor. We should probably track a unique id per monitor that can be retrieved. 
-		public Task ClientCheckin(string client, List<VirtualScreen> screens) //TODO: I broke this function registering screens because I changed it to accept a virtual screen instead of a display.
+		public Task ClientCheckin(string client, List<VirtualScreen> screens) 
         {
             var connectionId = Context.ConnectionId;
 
@@ -100,9 +94,6 @@ namespace OTB.CoreServer
                 else
                 {
 
-                    
-                    
-               
                     foreach (var screen in screens)
                     {
                         //attempt to simply add this screen in the requested position for a reconnect
@@ -116,12 +107,7 @@ namespace OTB.CoreServer
                         }
                     }
 
-
-
 					return Clients.All.ScreenConfigUpdate(_screenConfiguration.Screens.Values.SelectMany(x=>x).ToList());
-
-
-
                 }
 
             }
