@@ -45,10 +45,10 @@ namespace OTB.Core
             _connection.Start();            
             _hook.Init();
 
-            //there is some kind of dpi awareness bug here on windows. not sure exactly what's up.
             VirtualScreen s=null;
             foreach (var display in _hook.GetDisplays())
             {
+                Console.WriteLine($"x={display.X},y={display.Y},width={display.Width},height={display.Height}");
                 s=ClientState.ScreenConfiguration.AddScreen(display.X, display.Y, display.X, display.Y, display.Width, display.Height, ClientState.ClientName,"");
             }
             _dispatcher.ClientCheckin(ClientState.ClientName, ClientState.ScreenConfiguration.Screens.Values.SelectMany(x=>x).ToList());

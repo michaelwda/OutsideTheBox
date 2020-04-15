@@ -37,9 +37,6 @@ namespace OTB.Core.Hook.Platform.Windows
         public override void Init()
         {
             NativeMethods.SetProcessDPIAware();
-
-
-            
         }
 
        
@@ -99,7 +96,6 @@ namespace OTB.Core.Hook.Platform.Windows
 
         public override void Start()
         {
-            
             //https://stackoverflow.com/questions/8980873/implementing-a-win32-message-loop-and-creating-a-window-object-with-p-invoke
             _messageWindowProc = WndProc;
             w = new WNDCLASSEX();
@@ -151,6 +147,55 @@ namespace OTB.Core.Hook.Platform.Windows
             this.MouseState.Position=new MousePoint(p.X, p.Y);
             
         }
+
+        public override void Stop()
+        {
+            if (_messageWindowHandle != IntPtr.Zero)
+            {
+                NativeMethods.RemoveClipboardFormatListener(_messageWindowHandle);
+                NativeMethods.DestroyWindow(_messageWindowHandle);
+                NativeMethods.UnregisterClass("OTB_Message_Watcher_Class", IntPtr.Zero);
+            }
+            // because we can unhook only in the same thread, not in garbage collector thread
+            if (_windowsMouseHookHandle != IntPtr.Zero)
+            {
+
+                if (!NativeMethods.UnhookWindowsHookEx(_windowsMouseHookHandle))
+                {
+                    int errorCode = Marshal.GetLastWin32Error();
+                    throw new Win32Exception(errorCode, $"Failed to remove mouse hooks for '{Process.GetCurrentProcess().ProcessName}'. Error {errorCode}: {new Win32Exception(Marshal.GetLastWin32Error()).Message}.");
+                }
+                _windowsMouseHookHandle = IntPtr.Zero;
+
+                // ReSharper disable once DelegateSubtraction
+                _mouseHookProc -= LowLevelMouseProc;
+            }
+
+            // because we can unhook only in the same thread, not in garbage collector thread
+            if (_windowsKeyboardHookHandle != IntPtr.Zero)
+            {
+                if (!NativeMethods.UnhookWindowsHookEx(_windowsKeyboardHookHandle))
+                {
+                    int errorCode = Marshal.GetLastWin32Error();
+                    throw new Win32Exception(errorCode, $"Failed to remove keyboard hooks for '{Process.GetCurrentProcess().ProcessName}'. Error {errorCode}: {new Win32Exception(Marshal.GetLastWin32Error()).Message}.");
+                }
+                _windowsKeyboardHookHandle = IntPtr.Zero;
+
+                // ReSharper disable once DelegateSubtraction
+                _keyboardHookProc -= LowLevelKeyboardProc;
+            }
+
+            if (_user32LibraryHandle != IntPtr.Zero)
+            {
+                if (!NativeMethods.FreeLibrary(_user32LibraryHandle)) // reduces reference to library by 1.
+                {
+                    int errorCode = Marshal.GetLastWin32Error();
+                    throw new Win32Exception(errorCode, $"Failed to unload library 'User32.dll'. Error {errorCode}: {new Win32Exception(Marshal.GetLastWin32Error()).Message}.");
+                }
+                _user32LibraryHandle = IntPtr.Zero;
+            }
+        }
+
         public IntPtr LowLevelMouseProc(int nCode, IntPtr wParam, IntPtr lParam)
         {
 
@@ -672,65 +717,15 @@ namespace OTB.Core.Hook.Platform.Windows
         }
 
 
-        protected virtual void Dispose(bool disposing)
-        {
-            if (disposing)
-            {
-                if (_messageWindowHandle != IntPtr.Zero)
-                {
-                    NativeMethods.RemoveClipboardFormatListener(_messageWindowHandle);
-                    NativeMethods.DestroyWindow(_messageWindowHandle);
-                    NativeMethods.UnregisterClass("OTB_Message_Watcher_Class", IntPtr.Zero);
-                }
-                // because we can unhook only in the same thread, not in garbage collector thread
-                if (_windowsMouseHookHandle != IntPtr.Zero)
-                {
-
-                    if (!NativeMethods.UnhookWindowsHookEx(_windowsMouseHookHandle))
-                    {
-                        int errorCode = Marshal.GetLastWin32Error();
-                        throw new Win32Exception(errorCode, $"Failed to remove mouse hooks for '{Process.GetCurrentProcess().ProcessName}'. Error {errorCode}: {new Win32Exception(Marshal.GetLastWin32Error()).Message}.");
-                    }
-                    _windowsMouseHookHandle = IntPtr.Zero;
-
-                    // ReSharper disable once DelegateSubtraction
-                    _mouseHookProc -= LowLevelMouseProc;
-                }
-
-                // because we can unhook only in the same thread, not in garbage collector thread
-                if (_windowsKeyboardHookHandle != IntPtr.Zero)
-                {
-                    if (!NativeMethods.UnhookWindowsHookEx(_windowsKeyboardHookHandle))
-                    {
-                        int errorCode = Marshal.GetLastWin32Error();
-                        throw new Win32Exception(errorCode, $"Failed to remove keyboard hooks for '{Process.GetCurrentProcess().ProcessName}'. Error {errorCode}: {new Win32Exception(Marshal.GetLastWin32Error()).Message}.");
-                    }
-                    _windowsKeyboardHookHandle = IntPtr.Zero;
-
-                    // ReSharper disable once DelegateSubtraction
-                    _keyboardHookProc -= LowLevelKeyboardProc;
-                }
-            }
-
-            if (_user32LibraryHandle != IntPtr.Zero)
-            {
-                if (!NativeMethods.FreeLibrary(_user32LibraryHandle)) // reduces reference to library by 1.
-                {
-                    int errorCode = Marshal.GetLastWin32Error();
-                    throw new Win32Exception(errorCode, $"Failed to unload library 'User32.dll'. Error {errorCode}: {new Win32Exception(Marshal.GetLastWin32Error()).Message}.");
-                }
-                _user32LibraryHandle = IntPtr.Zero;
-            }
-        }
-
+        
         ~WindowsGlobalHook()
         {
-            Dispose(false);
+            Stop();
         }
 
         public override void Dispose()
         {
-            Dispose(true);
+            Stop();
             GC.SuppressFinalize(this);
         }
     }

@@ -12,7 +12,7 @@ namespace OTB.Client
     public class OTBHub : Hub<IOTBClient>
     {
         private readonly ILogger _logger;
-        static readonly ScreenConfiguration _screenConfiguration = new ScreenConfiguration();
+        static readonly ScreenConfiguration ScreenConfiguration = new ScreenConfiguration();
         public OTBHub(ILoggerFactory logger)
         {
             _logger = logger.CreateLogger("Hub");
@@ -25,12 +25,12 @@ namespace OTB.Client
 
         public override async Task OnDisconnectedAsync(Exception ex)
         {
-            var screens=_screenConfiguration.GetScreensForConnection(Context.ConnectionId).ToList();
+            var screens=ScreenConfiguration.GetScreensForConnection(Context.ConnectionId).ToList();
             foreach(var s in screens)
             {
-                _screenConfiguration.Remove(s);
+                ScreenConfiguration.Remove(s);
             }
-            await Clients.All.ScreenConfigUpdate(_screenConfiguration.Screens.Values.SelectMany(x => x).ToList());
+            await Clients.All.ScreenConfigUpdate(ScreenConfiguration.Screens.Values.SelectMany(x => x).ToList());
         }
 
         public Task Clipboard(string value)
@@ -40,6 +40,7 @@ namespace OTB.Client
 
 		public Task MouseMove(double x, double y)
         {
+            _logger.LogDebug($"{x},{y}");
             return Clients.Others.MouseMove(x, y);
         }
 		public Task MouseWheel(int x, int y)
@@ -73,23 +74,23 @@ namespace OTB.Client
 				return Task.CompletedTask;
 
             //add each of these displays
-            if (_screenConfiguration.Screens.ContainsKey(client) && _screenConfiguration.Screens[client].Any())
+            if (ScreenConfiguration.Screens.ContainsKey(client) && ScreenConfiguration.Screens[client].Any())
             {
                 //this client is already configured.
                 //TODO: we actually need to handle this - like if they add a new monitor...
-                return Clients.All.ScreenConfigUpdate(_screenConfiguration.Screens.Values.SelectMany(x => x).ToList());
+                return Clients.All.ScreenConfigUpdate(ScreenConfiguration.Screens.Values.SelectMany(x => x).ToList());
             }
             else
             {
                 //for now, as clients start, we're just adding them to the right
-                if (!_screenConfiguration.Screens.Any())
+                if (!ScreenConfiguration.Screens.Any())
                 {
                     foreach (var screen in screens)
                     {
-                        var newScreen = _screenConfiguration.AddScreen(screen.X, screen.Y, screen.X, screen.Y, screen.Width, screen.Height, client, connectionId);
+                        var newScreen = ScreenConfiguration.AddScreen(screen.X, screen.Y, screen.X, screen.Y, screen.Width, screen.Height, client, connectionId);
                     }
 
-                    return Clients.All.ScreenConfigUpdate(_screenConfiguration.Screens.Values.SelectMany(x => x).ToList());
+                    return Clients.All.ScreenConfigUpdate(ScreenConfiguration.Screens.Values.SelectMany(x => x).ToList());
                 }
                 else
                 {
@@ -97,17 +98,17 @@ namespace OTB.Client
                     foreach (var screen in screens)
                     {
                         //attempt to simply add this screen in the requested position for a reconnect
-                        var newScreen = _screenConfiguration.AddScreen(screen.X, screen.Y, screen.X, screen.Y, screen.Width, screen.Height, client, connectionId);
+                        var newScreen = ScreenConfiguration.AddScreen(screen.X, screen.Y, screen.X, screen.Y, screen.Width, screen.Height, client, connectionId);
 
                         if (newScreen == null)
                         {
-                            VirtualScreen s = _screenConfiguration.GetFurthestRight();
-                            _screenConfiguration.AddScreenRight(s, screen.X, screen.Y, screen.Width, screen.Height, client, connectionId);
+                            VirtualScreen s = ScreenConfiguration.GetFurthestRight();
+                            ScreenConfiguration.AddScreenRight(s, screen.X, screen.Y, screen.Width, screen.Height, client, connectionId);
                            
                         }
                     }
 
-					return Clients.All.ScreenConfigUpdate(_screenConfiguration.Screens.Values.SelectMany(x=>x).ToList());
+					return Clients.All.ScreenConfigUpdate(ScreenConfiguration.Screens.Values.SelectMany(x=>x).ToList());
                 }
 
             }

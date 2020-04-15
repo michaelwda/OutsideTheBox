@@ -1,7 +1,7 @@
 BUGS
  1) From OSX, I can't drag a selection box on windows. Something going on there with mouse events? 
  2) Some weird windows DPI issues.
- 3) Clipboard copy not working for unicode / images
+ 3) Clipboard copy not working for unicode / images / MSWord
  4) Clipboard copy not implemented on OSX hook. There's no OS level hook, so we'll need to poll. Garbage.
  5) SOMETIMES there's a little bit of stickiness when scrolling along an edge of a virtual screen. Investigate?
  6) We need a fail-safe bailout. Like we're receiving hook input but we're trapped somewhere?

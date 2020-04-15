@@ -209,7 +209,7 @@ namespace OTB.Core.Hook.Platform
             MouseWheel(this, e);
         }
 
-
+        public abstract void Stop();
         public abstract void Dispose();
     }
 }

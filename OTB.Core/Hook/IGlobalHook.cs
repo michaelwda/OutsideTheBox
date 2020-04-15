@@ -30,8 +30,8 @@ namespace OTB.Core.Hook
 
         void Init();
         void Start();
+        void Stop();
 
-        
     }
 
     

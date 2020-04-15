@@ -9,6 +9,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OTB.Client", "OTB.Client\OT
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OTB.KeyTest", "OTB.KeyTest\OTB.KeyTest.csproj", "{8C9682F5-A331-4733-A917-8C7EFED7471B}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OTB.Tests", "OTB.Tests\OTB.Tests.csproj", "{15893CD3-5B1F-4124-A89B-91BECD190625}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +29,10 @@ Global
 		{8C9682F5-A331-4733-A917-8C7EFED7471B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8C9682F5-A331-4733-A917-8C7EFED7471B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8C9682F5-A331-4733-A917-8C7EFED7471B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{15893CD3-5B1F-4124-A89B-91BECD190625}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{15893CD3-5B1F-4124-A89B-91BECD190625}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{15893CD3-5B1F-4124-A89B-91BECD190625}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{15893CD3-5B1F-4124-A89B-91BECD190625}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

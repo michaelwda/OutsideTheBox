@@ -20,29 +20,21 @@ namespace OTB.Core
   
     public class VirtualScreenManager
     {
-        
-      
-
         public VirtualScreenManager()
         {
            
         }
         public CoordinateCalculationResult UpdateVirtualMouseCoordinates(MouseMoveEventArgs e)
         {
-             
             //calculate the change from previous stored coordinates
             double deltaX = e.Mouse.X - ClientState._lastPositionX;
             double deltaY = e.Mouse.Y - ClientState._lastPositionY;
-            
-            
-            
-            //Console.WriteLine(deltaY+": " + e.Mouse.Y + " - " + ClientState._lastPositionY);
             
             ClientState._virtualX += deltaX;
             ClientState._virtualY += deltaY;
             
             var s = ClientState.ScreenConfiguration.ValidVirtualCoordinate(ClientState._virtualX, ClientState._virtualY);
-            //Console.WriteLine("hook " + e.Mouse.X + "," + e.Mouse.Y + " : delta " + deltaX + "," + deltaY + " : virtual " + ClientState._virtualX + ", " + ClientState._virtualY + ", lastpos:"+ClientState._lastPositionX+","+ClientState._lastPositionY);
+
             if (s != null)
             {                
                 return CoordinateCalculationResult.Valid;
@@ -55,13 +47,7 @@ namespace OTB.Core
 
         }
         
-        //public MousePoint GetHideCoordinatesForLocalClient()
-        //{
-
-        //}
-        
-
-
+ 
         //TODO: rewrite this. there are really only  3 outcomes of this function.
         // 1) hide the mouse, show the mouse, replay the mouse from a remote server
         // 2) translate virtual coords to screen coords.
@@ -71,7 +57,6 @@ namespace OTB.Core
         //decide whether to hide the mouse, pass the coords to the hook, or handle the event, or some combo.
         public CoordinateUpdateResult ProcessVirtualCoordinatesUpdate(bool replay=false)
         {
-            
             CoordinateUpdateResult result=new CoordinateUpdateResult();
             
             //find the current screen

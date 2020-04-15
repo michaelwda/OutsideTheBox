@@ -180,8 +180,29 @@ namespace OTB.Core.Hook.Platform.OSX
             
             CF.RunLoopAddSource(runLoop, runLoopSource, CF.RunLoopModeDefault);
         }
-        
-        
+
+        public override void Stop()
+        {
+            // because we can unhook only in the same thread, not in garbage collector thread
+            if (_eventTap != IntPtr.Zero)
+            {
+                CG.EventTapEnable(_eventTap, false);
+                CF.CFRelease(_eventTap);
+
+
+                _eventTap = IntPtr.Zero;
+
+                // ReSharper disable once DelegateSubtraction
+                _eventHookProc -= EventProc;
+            }
+
+            if (runLoop != IntPtr.Zero)
+            {
+                CF.CFRelease(runLoop);
+
+            }
+        }
+
         private IntPtr EventProc(IntPtr proxy, CGEventType type, IntPtr @event, IntPtr refcon)
         {
              
@@ -510,40 +531,15 @@ namespace OTB.Core.Hook.Platform.OSX
             return flags;
         }
 
-        protected virtual void Dispose(bool disposing)
-        {
-            if (disposing)
-            {
-                // because we can unhook only in the same thread, not in garbage collector thread
-                if (_eventTap != IntPtr.Zero)
-                {
-                    CG.EventTapEnable(_eventTap, false);
-                    CF.CFRelease(_eventTap);
-                   
-                    
-                    _eventTap = IntPtr.Zero;
-
-                    // ReSharper disable once DelegateSubtraction
-                    _eventHookProc -= EventProc;
-                }
-
-                if (runLoop != IntPtr.Zero)
-                {
-                    CF.CFRelease(runLoop);
-                    
-                }
-           
-            }
-        }
-
+       
         ~OsxGlobalHook()
         {
-            Dispose(false);
+            Stop();
         }
 
         public override void Dispose()
         {
-            Dispose(true);
+            Stop();
             GC.SuppressFinalize(this);
         }
     }

@@ -80,7 +80,6 @@ namespace OTB.Core
 
         public VirtualScreen ValidVirtualCoordinate(double x, double y)
         {
-            //Console.WriteLine("checking:"+x+","+y);
             foreach (var s in Screens.Values.SelectMany(s=>s))
             {
                 if (x >= s.X && x < (s.X + s.Width) && y >= s.Y && y < (s.Y + s.Height))
@@ -126,19 +125,14 @@ namespace OTB.Core
 
         }
 
-
-
-
         public List<VirtualScreen> GetScreensForConnection(string connectionId)
         {
             return Screens.Values.SelectMany(x=>x).Where(x => x.ConnectionId == connectionId).ToList();
         }
-        
 
         //function to support removing screen in an arbitrary place. Will collapse other screens in.
         public void Remove(VirtualScreen s)
         {
-
             var left = GetFurthestLeft();
             var right = GetFurthestRight();
 

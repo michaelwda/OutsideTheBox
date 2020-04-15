@@ -47,7 +47,6 @@ namespace OTB.Core
             Hook.KeyUp += _globalHook_KeyUp;
             Hook.Clipboard += _globalHook_Clipboard;
 
- 
             var c = Hook.GetMousePos();                     
             
             ClientState._virtualX = c.X;
@@ -59,6 +58,7 @@ namespace OTB.Core
         public void Stop()
         {
             //TODO: Implement unhook events here.
+            Hook.Stop();
         }
         
         
