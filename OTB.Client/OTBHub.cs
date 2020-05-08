@@ -64,13 +64,11 @@ namespace OTB.Client
             return Clients.Others.KeyUp(key);
         }
 
-        //we have multiple monitors for a client. 
-        //we may want to remove a single monitor. We should probably track a unique id per monitor that can be retrieved. 
 		public Task ClientCheckin(string client, List<VirtualScreen> screens) 
         {
             var connectionId = Context.ConnectionId;
 
-            if (screens.Count < 1)
+            if (!screens.Any())
 				return Task.CompletedTask;
 
             //add each of these displays
@@ -87,29 +85,22 @@ namespace OTB.Client
                 {
                     foreach (var screen in screens)
                     {
-                        var newScreen = ScreenConfiguration.AddScreen(screen.X, screen.Y, screen.X, screen.Y, screen.Width, screen.Height, client, connectionId);
+                        ScreenConfiguration.AddScreen(screen, client, connectionId);
                     }
 
                     return Clients.All.ScreenConfigUpdate(ScreenConfiguration.Screens.Values.SelectMany(x => x).ToList());
                 }
-                else
+
+                foreach (var screen in screens)
                 {
+                    //attempt to simply add this screen in the requested position for a reconnect
+                    var newScreen = ScreenConfiguration.AddScreen(screen, client, connectionId);
+                    if (newScreen != null) continue;
 
-                    foreach (var screen in screens)
-                    {
-                        //attempt to simply add this screen in the requested position for a reconnect
-                        var newScreen = ScreenConfiguration.AddScreen(screen.X, screen.Y, screen.X, screen.Y, screen.Width, screen.Height, client, connectionId);
-
-                        if (newScreen == null)
-                        {
-                            VirtualScreen s = ScreenConfiguration.GetFurthestRight();
-                            ScreenConfiguration.AddScreenRight(s, screen.X, screen.Y, screen.Width, screen.Height, client, connectionId);
-                           
-                        }
-                    }
-
-					return Clients.All.ScreenConfigUpdate(ScreenConfiguration.Screens.Values.SelectMany(x=>x).ToList());
+                    ScreenConfiguration.AddScreenRight(s, screen.VirtualX, screen.VirtualY, screen.Width, screen.Height, client, connectionId);
                 }
+
+                return Clients.All.ScreenConfigUpdate(ScreenConfiguration.Screens.Values.SelectMany(x=>x).ToList());
 
             }
         }

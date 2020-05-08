@@ -13,9 +13,9 @@ namespace OTB.Core
     {
         private readonly ServerConnectionManager _manager;
         private readonly HookManager _hook;
-        private readonly VirtualScreenManager _screen;
+        private readonly MouseUpdateManager _screen;
 
-        public ServerEventReceiver(ServerConnectionManager manager, HookManager hookManager, VirtualScreenManager screen)
+        public ServerEventReceiver(ServerConnectionManager manager, HookManager hookManager, MouseUpdateManager screen)
         {
             _manager = manager;
             _hook = hookManager;
@@ -64,12 +64,12 @@ namespace OTB.Core
                 ClientState.ScreenConfiguration.Screens[screen.Client].Add(screen);
             }
 
-            if (ClientState.ScreenConfiguration.ValidVirtualCoordinate(ClientState._virtualX, ClientState._virtualY) !=
+            if (ClientState.ScreenConfiguration.GetScreenForVirtualCoordinate(ClientState._virtualX, ClientState._virtualY) !=
                 null) return;
             //coordinates are invalid, grab a screen
-            var s = ClientState.ScreenConfiguration.GetFurthestLeft();
-            ClientState._virtualX = s.X;
-            ClientState._virtualY = s.Y;
+            var s = ClientState.ScreenConfiguration.GetFurthestLeftScreen();
+            ClientState._virtualX = s.VirtualX;
+            ClientState._virtualY = s.VirtualY;
             if (s.Client != ClientState.ClientName) return;
             //set this local client to have 0,0 coords. then update the other clients with the new virtual position.
             ClientState._lastPositionX = 0;

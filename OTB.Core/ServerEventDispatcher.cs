@@ -73,30 +73,23 @@ namespace OTB.Core
         {
              if (!_manager.IsConnected())
                    return;
-            _manager.HubConnection.InvokeAsync("MouseDown", button).ContinueWith(task1 => {
-               if (task1.IsFaulted)
-               {
-                   Console.WriteLine("There was an error calling send: {0}", task1.Exception.GetBaseException());
-               }
-               else
-               {
-
-               }
-           });
+             _manager.HubConnection.InvokeAsync("MouseDown", button).ContinueWith(task1 => {
+                 if (task1.IsFaulted)
+                 {
+                     Console.WriteLine("There was an error calling send: {0}", task1.Exception.GetBaseException());
+                 }
+             });
         }
 
         public void MouseUp(MouseButton button)
         {
             if (!_manager.IsConnected())
                 return;
-            _manager.HubConnection.InvokeAsync("MouseUp", button).ContinueWith(task1 => {
+            _manager.HubConnection.InvokeAsync("MouseUp", button).ContinueWith(task1 =>
+            {
                 if (task1.IsFaulted)
                 {
                     Console.WriteLine("There was an error calling send: {0}", task1.Exception.GetBaseException());
-                }
-                else
-                {
-
                 }
             });
         }
@@ -105,46 +98,37 @@ namespace OTB.Core
         {
             if (!_manager.IsConnected())
                 return;
-            _manager.HubConnection.InvokeAsync("MouseMove", virtualX, virtualY ).ContinueWith(task1 => {
-                            if (task1.IsFaulted)
-                            {
-                                Console.WriteLine("There was an error calling send: {0}", task1.Exception.GetBaseException());
-                            }
-                            else
-                            {
-            
-                            }
-                        });
+            _manager.HubConnection.InvokeAsync("MouseMove", virtualX, virtualY).ContinueWith(task1 =>
+            {
+                if (task1.IsFaulted)
+                {
+                    Console.WriteLine("There was an error calling send: {0}", task1.Exception.GetBaseException());
+                }
+            });
         }
 
         public void KeyDown(Key key)
         {
             if (!_manager.IsConnected())
                 return;
-            _manager.HubConnection.InvokeAsync("KeyDown", key).ContinueWith(task1 => {
-                            if (task1.IsFaulted)
-                            {
-                                Console.WriteLine("There was an error calling send: {0}", task1.Exception.GetBaseException());
-                            }
-                            else
-                            {
-            
-                            }
-                        });
+            _manager.HubConnection.InvokeAsync("KeyDown", key).ContinueWith(task1 =>
+            {
+                if (task1.IsFaulted)
+                {
+                    Console.WriteLine("There was an error calling send: {0}", task1.Exception.GetBaseException());
+                }
+            });
         }
 
         public void KeyUp(Key key)
         {
             if (!_manager.IsConnected())
                 return;
-            _manager.HubConnection.InvokeAsync("KeyUp", key).ContinueWith(task1 => {
+            _manager.HubConnection.InvokeAsync("KeyUp", key).ContinueWith(task1 =>
+            {
                 if (task1.IsFaulted)
                 {
                     Console.WriteLine("There was an error calling send: {0}", task1.Exception.GetBaseException());
-                }
-                else
-                {
-
                 }
             });
         }
@@ -154,15 +138,11 @@ namespace OTB.Core
             //check in this client
             if (!_manager.IsConnected())
                 return;
-            _manager.HubConnection.InvokeAsync<string>("ClientCheckin", clientName, screens).ContinueWith(task1 => {
+            _manager.HubConnection.InvokeAsync<string>("ClientCheckin", clientName, screens).ContinueWith(task1 =>
+            {
                 if (task1.IsFaulted)
                 {
                     Console.WriteLine("There was an error calling send: {0}", task1.Exception.GetBaseException());
-                     
-                }
-                else
-                {
-                    
                 }
             }).Wait();
         }

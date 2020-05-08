@@ -20,7 +20,6 @@ namespace OTB.Core
         public static double _virtualY = double.MaxValue; //computed position   
         public static double _lastPositionX; //stored value of our last position before going off-screen
         public static double _lastPositionY; //stored value of our last position before going off-screen
-        
         public static DateTime LastHookEvent_Mouse { get; set; } = DateTime.Now;
         public static DateTime LastHookEvent_Keyboard { get; set; } = DateTime.Now;
         public static DateTime LastServerEvent_Mouse { get; set; } = DateTime.Now;

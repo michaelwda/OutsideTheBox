@@ -11,10 +11,21 @@ namespace OTB.Core
         public ConcurrentDictionary<string,List<VirtualScreen>> Screens { get; set; }
         public ScreenConfiguration()
         {
-            Screens= new ConcurrentDictionary<string, List<VirtualScreen>>();
+            Screens = new ConcurrentDictionary<string, List<VirtualScreen>>();
         }
-        
-        public VirtualScreen AddScreen(double localX, double localY, double virtualX, double virtualY, double width, double height, string client, string connectionId)
+
+        public VirtualScreen AddScreen(VirtualScreen screen, string client, string connectionId)
+        {
+            var furthestRight = GetFurthestRightScreen();
+            if (furthestRight == null)
+                return AddScreen(screen.VirtualX, screen.VirtualY, screen.VirtualX, screen.VirtualY, screen.Width, screen.Height, client, connectionId);
+            else
+            {
+                return AddScreen(localX, localY, orig.VirtualX + orig.Width, orig.VirtualY, width, height, client, connectionId);
+            }
+        }
+
+        private VirtualScreen AddScreen(double localX, double localY, double virtualX, double virtualY, double width, double height, string client, string connectionId)
         {
             double newXBottomCorner = virtualX + width-1;
             double newYBottomCorner = virtualY + height-1;
@@ -22,10 +33,10 @@ namespace OTB.Core
              
             foreach (var s in Screens.Values.SelectMany(x=>x))
             {
-                var existingX = s.X;
-                var existingY = s.Y;
-                var existingXBottomCorner = s.X + s.Width-1;
-                var existingYBottomCorner = s.Y + s.Height-1; 
+                var existingX = s.VirtualX;
+                var existingY = s.VirtualY;
+                var existingXBottomCorner = s.VirtualX + s.Width-1;
+                var existingYBottomCorner = s.VirtualY + s.Height-1; 
                 
                 //no overlap of x coords
                 if (virtualX > existingXBottomCorner || newXBottomCorner < existingX )
@@ -43,8 +54,8 @@ namespace OTB.Core
             VirtualScreen newScreen=new VirtualScreen();
             newScreen.LocalX = localX;
             newScreen.LocalY = localY;
-            newScreen.X = virtualX;
-            newScreen.Y = virtualY;
+            newScreen.VirtualX = virtualX;
+            newScreen.VirtualY = virtualY;
             newScreen.Width = width;
             newScreen.Height = height;
             newScreen.Client = client;
@@ -53,7 +64,6 @@ namespace OTB.Core
             if(!Screens.ContainsKey(client))
             {
                 Screens.TryAdd(client, new List<VirtualScreen>());
-
             }
             Screens[client].Add(newScreen);
           
@@ -61,41 +71,23 @@ namespace OTB.Core
             return newScreen;
         }
 
-        public VirtualScreen AddScreenRight(VirtualScreen orig, double localX, double localY, double width, double height, string client, string connectionId)
-        {            
-            return AddScreen(localX, localY, orig.X + orig.Width, orig.Y, width, height, client, connectionId);            
-        }
-        public VirtualScreen AddScreenLeft(VirtualScreen orig, double localX, double localY, double width, double height, string client, string connectionId)
-        {
-            return AddScreen(localX, localY, orig.X - width, orig.Y, width, height, client, connectionId);
-        }
-        public VirtualScreen AddScreenAbove(VirtualScreen orig, double localX, double localY, double width, double height, string client, string connectionId)
-        {
-            return AddScreen(localX, localY, orig.X, orig.Y-height, width, height, client, connectionId);
-        }
-        public VirtualScreen AddScreenBelow(VirtualScreen orig, double localX, double localY, double width, double height, string client, string connectionId)
-        {
-            return AddScreen(localX, localY, orig.X, orig.Y + orig.Height, width, height, client, connectionId);
-        }
-
-        public VirtualScreen ValidVirtualCoordinate(double x, double y)
+        public VirtualScreen GetScreenForVirtualCoordinate(double x, double y)
         {
             foreach (var s in Screens.Values.SelectMany(s=>s))
             {
-                if (x >= s.X && x < (s.X + s.Width) && y >= s.Y && y < (s.Y + s.Height))
+                if (x >= s.VirtualX && x < (s.VirtualX + s.Width) && y >= s.VirtualY && y < (s.VirtualY + s.Height))
                     return s;
             }
 
             return null;
         }
-
-        public VirtualScreen GetFurthestRight()
+        private VirtualScreen GetFurthestRightScreen()
         {
             VirtualScreen furthestRight = null;
             var maxX = double.MinValue;
             foreach (var s in Screens.Values.SelectMany(x => x)) 
             {
-                var maxForThisScreen = s.X + s.Width;
+                var maxForThisScreen = s.VirtualX + s.Width;
                 if (maxForThisScreen > maxX)
                 {
                     maxX = maxForThisScreen;
@@ -106,14 +98,13 @@ namespace OTB.Core
             return furthestRight;
 
         }
-
-        public VirtualScreen GetFurthestLeft()
+        private VirtualScreen GetFurthestLeftScreen()
         {
             VirtualScreen furthestLeft = null;
             var minX = double.MaxValue;
             foreach (var s in Screens.Values.SelectMany(x => x))
             {
-                var minForThisScreen = s.X;
+                var minForThisScreen = s.VirtualX;
                 if (minForThisScreen < minX)
                 {
                     minX = minForThisScreen;
@@ -124,7 +115,6 @@ namespace OTB.Core
             return furthestLeft;
 
         }
-
         public List<VirtualScreen> GetScreensForConnection(string connectionId)
         {
             return Screens.Values.SelectMany(x=>x).Where(x => x.ConnectionId == connectionId).ToList();
@@ -133,8 +123,8 @@ namespace OTB.Core
         //function to support removing screen in an arbitrary place. Will collapse other screens in.
         public void Remove(VirtualScreen s)
         {
-            var left = GetFurthestLeft();
-            var right = GetFurthestRight();
+            var left = GetFurthestLeftScreen();
+            var right = GetFurthestRightScreen();
 
             //Screens
             Screens[s.Client].Remove(s);
@@ -150,9 +140,9 @@ namespace OTB.Core
             //for every screen with a starting X coord that's greater than this, move it back towards 0
             foreach(var screen in Screens.Values.SelectMany(x=>x).ToList())
             {
-                if(screen.X>s.X)
+                if(screen.VirtualX > s.VirtualX)
                 {
-                    screen.X -= s.Width;
+                    screen.VirtualX -= s.Width;
                 }
             }
 

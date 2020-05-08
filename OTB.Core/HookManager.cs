@@ -14,10 +14,10 @@ namespace OTB.Core
     public class HookManager : IDisposable
     {
         private readonly ServerEventDispatcher _dispatcher;
-        private readonly VirtualScreenManager _screen;
+        private readonly MouseUpdateManager _screen;
         public readonly IGlobalHook Hook;
         
-        public HookManager(ServerEventDispatcher dispatcher, VirtualScreenManager screen)
+        public HookManager(ServerEventDispatcher dispatcher, MouseUpdateManager screen)
         {
             _dispatcher = dispatcher;
             _screen = screen;
@@ -123,13 +123,9 @@ namespace OTB.Core
         }
         private void _globalHook_MouseMove(object sender, MouseMoveEventArgs e)
         {
-
-           
-            
             //don't process a hook event within 2 seconds of a server event
             if (ShouldHookBailMouse())
                 return;
-            
             
             ClientState.LastHookEvent_Mouse = DateTime.Now;
 

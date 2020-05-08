@@ -18,9 +18,9 @@ namespace OTB.Core
         
     }
   
-    public class VirtualScreenManager
+    public class MouseUpdateManager
     {
-        public VirtualScreenManager()
+        public MouseUpdateManager()
         {
            
         }
@@ -33,7 +33,7 @@ namespace OTB.Core
             ClientState._virtualX += deltaX;
             ClientState._virtualY += deltaY;
             
-            var s = ClientState.ScreenConfiguration.ValidVirtualCoordinate(ClientState._virtualX, ClientState._virtualY);
+            var s = ClientState.ScreenConfiguration.GetScreenForVirtualCoordinate(ClientState._virtualX, ClientState._virtualY);
 
             if (s != null)
             {                
@@ -61,15 +61,15 @@ namespace OTB.Core
             
             //find the current screen
             //these coordinates may have just been updated from the server
-            var s = ClientState.ScreenConfiguration.ValidVirtualCoordinate(ClientState._virtualX, ClientState._virtualY);
+            var s = ClientState.ScreenConfiguration.GetScreenForVirtualCoordinate(ClientState._virtualX, ClientState._virtualY);
             if (s == null)
                 return result;
           
             if(s.Client==ClientState.ClientName)
             {
                 
-                var localX =Math.Abs(ClientState._virtualX - s.X) + s.LocalX;
-                var localY = Math.Abs(ClientState._virtualY - s.Y) + s.LocalY;
+                var localX =Math.Abs(ClientState._virtualX - s.VirtualX) + s.LocalX;
+                var localY = Math.Abs(ClientState._virtualY - s.VirtualY) + s.LocalY;
                 
                 ClientState._lastPositionX = localX;
                 ClientState._lastPositionY = localY;

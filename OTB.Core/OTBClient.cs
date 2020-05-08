@@ -26,14 +26,14 @@ namespace OTB.Core
         private ServerConnectionManager _connection;
         private ServerEventDispatcher _dispatcher;
         private ServerEventReceiver _receiver;
-        private VirtualScreenManager _screen;
+        private MouseUpdateManager _screen;
         public OTBClient(string serverAddress)
         {
             ClientState.ClientName = Environment.MachineName;
             
             _connection=new ServerConnectionManager(serverAddress); 
             _dispatcher=new ServerEventDispatcher(_connection);
-            _screen=new VirtualScreenManager(); 
+            _screen=new MouseUpdateManager(); 
             _hook=new HookManager(_dispatcher, _screen);
             _receiver=new ServerEventReceiver(_connection, _hook, _screen);
 
@@ -51,22 +51,12 @@ namespace OTB.Core
                 Console.WriteLine($"x={display.X},y={display.Y},width={display.Width},height={display.Height}");
                 s=ClientState.ScreenConfiguration.AddScreen(display.X, display.Y, display.X, display.Y, display.Width, display.Height, ClientState.ClientName,"");
             }
+            
             _dispatcher.ClientCheckin(ClientState.ClientName, ClientState.ScreenConfiguration.Screens.Values.SelectMany(x=>x).ToList());
             _hook.Hook.SetMousePos(ClientState._lastPositionX, ClientState._lastPositionY);
             _hook.Start();
                 
             return true;
-        }
-
-        public void MoveScreenRight()
-        {
-            //move the screens for the current client.
-            _dispatcher.MoveScreenRight();
-        }
-        public void MoveScreenLeft()
-        {
-            //move the screens for the current client. 
-            _dispatcher.MoveScreenLeft();
         }
 
         public void RunMessageLoop()

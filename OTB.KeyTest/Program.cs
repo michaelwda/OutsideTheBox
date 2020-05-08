@@ -10,7 +10,7 @@ namespace OTB.KeyTest
         {
             var connection = new ServerConnectionManager("http://localhost");
             var dispatcher = new ServerEventDispatcher(connection);
-            var screen = new VirtualScreenManager();
+            var screen = new MouseUpdateManager();
             var hook = new HookManager(dispatcher, screen);
             ClientState.Logger = LoggerFactory.Create(builder=>builder.AddConsole().SetMinimumLevel(LogLevel.Warning)).CreateLogger("OTB");
             hook.Start();

@@ -1,4 +1,8 @@
-﻿namespace OTB.Core
+﻿using System.Collections.Concurrent;
+using System.Collections.Generic;
+using System.Linq;
+
+namespace OTB.Core
 {
     public class VirtualScreen 
     {
@@ -35,10 +39,15 @@
         public double Width { get; set; } = 0;
         public double Height { get; set; } = 0;
 
-        public double X { get; set; } = 0;
-        public double Y { get; set; } = 0;
+        /*
+         * These coordinates are created by our application depending on how we've arranged our screens    
+         */
+        public double VirtualX { get; set; } = 0;
+        public double VirtualY { get; set; } = 0;
 
-        public string Client { get; set; } = "";
         public string ConnectionId { get; internal set; }
+        public string Client { get; set; } = "";
     }
+
+     
 }

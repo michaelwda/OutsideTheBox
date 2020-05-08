@@ -47,7 +47,7 @@ namespace OTB.Client
                 .UseSetting(WebHostDefaults.PreventHostingStartupKey, "true")
                 .ConfigureLogging(logging =>
                 {
-                    logging.SetMinimumLevel(LogLevel.Information);
+                    logging.SetMinimumLevel(LogLevel.Debug);
                     logging.AddConsole();
 
                 })
