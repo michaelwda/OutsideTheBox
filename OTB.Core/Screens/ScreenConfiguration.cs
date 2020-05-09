@@ -21,7 +21,7 @@ namespace OTB.Core
                 return AddScreen(screen.VirtualX, screen.VirtualY, screen.VirtualX, screen.VirtualY, screen.Width, screen.Height, client, connectionId);
             else
             {
-                return AddScreen(localX, localY, orig.VirtualX + orig.Width, orig.VirtualY, width, height, client, connectionId);
+                return AddScreen(screen.LocalX, screen.LocalY, furthestRight.VirtualX + furthestRight.Width, furthestRight.VirtualY, screen.Width, screen.Height, client, connectionId);
             }
         }
 
@@ -81,7 +81,7 @@ namespace OTB.Core
 
             return null;
         }
-        private VirtualScreen GetFurthestRightScreen()
+        public VirtualScreen GetFurthestRightScreen()
         {
             VirtualScreen furthestRight = null;
             var maxX = double.MinValue;
@@ -98,7 +98,7 @@ namespace OTB.Core
             return furthestRight;
 
         }
-        private VirtualScreen GetFurthestLeftScreen()
+        public VirtualScreen GetFurthestLeftScreen()
         {
             VirtualScreen furthestLeft = null;
             var minX = double.MaxValue;
@@ -131,9 +131,8 @@ namespace OTB.Core
 
             //so, right now i'm just adding screens left and right. I haven't done much with positioning up and down.
             //i'm going to keep this simple, but eventually we'll want to implement some kind of grid collapsing function
-            //like masonry 
+            //like how masonry behaves
 
-            
             if (s == left || s == right)
                 return;
 

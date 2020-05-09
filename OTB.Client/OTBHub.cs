@@ -78,31 +78,13 @@ namespace OTB.Client
                 //TODO: we actually need to handle this - like if they add a new monitor...
                 return Clients.All.ScreenConfigUpdate(ScreenConfiguration.Screens.Values.SelectMany(x => x).ToList());
             }
-            else
+
+            //for now, as clients start, we're just adding them to the right
+            foreach (var screen in screens)
             {
-                //for now, as clients start, we're just adding them to the right
-                if (!ScreenConfiguration.Screens.Any())
-                {
-                    foreach (var screen in screens)
-                    {
-                        ScreenConfiguration.AddScreen(screen, client, connectionId);
-                    }
-
-                    return Clients.All.ScreenConfigUpdate(ScreenConfiguration.Screens.Values.SelectMany(x => x).ToList());
-                }
-
-                foreach (var screen in screens)
-                {
-                    //attempt to simply add this screen in the requested position for a reconnect
-                    var newScreen = ScreenConfiguration.AddScreen(screen, client, connectionId);
-                    if (newScreen != null) continue;
-
-                    ScreenConfiguration.AddScreenRight(s, screen.VirtualX, screen.VirtualY, screen.Width, screen.Height, client, connectionId);
-                }
-
-                return Clients.All.ScreenConfigUpdate(ScreenConfiguration.Screens.Values.SelectMany(x=>x).ToList());
-
+                ScreenConfiguration.AddScreen(screen, client, connectionId);
             }
+            return Clients.All.ScreenConfigUpdate(ScreenConfiguration.Screens.Values.SelectMany(x=>x).ToList());
         }
     }
 }

@@ -49,7 +49,8 @@ namespace OTB.Core
             foreach (var display in _hook.GetDisplays())
             {
                 Console.WriteLine($"x={display.X},y={display.Y},width={display.Width},height={display.Height}");
-                s=ClientState.ScreenConfiguration.AddScreen(display.X, display.Y, display.X, display.Y, display.Width, display.Height, ClientState.ClientName,"");
+                var vs=new VirtualScreen(){LocalX = display.X, LocalY = display.Y, VirtualX = display.X, VirtualY = display.Y, Width = display.Width, Height = display.Height};
+                ClientState.ScreenConfiguration.AddScreen(vs, ClientState.ClientName,"");
             }
             
             _dispatcher.ClientCheckin(ClientState.ClientName, ClientState.ScreenConfiguration.Screens.Values.SelectMany(x=>x).ToList());

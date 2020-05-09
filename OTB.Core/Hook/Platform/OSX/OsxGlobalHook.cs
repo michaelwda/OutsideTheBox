@@ -157,7 +157,6 @@ namespace OTB.Core.Hook.Platform.OSX
         {             
             //init initial cursor position       
             this.MouseState.Position=new MousePoint(0,0);
-           
         }
 
         public override void Start()

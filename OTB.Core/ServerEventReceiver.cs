@@ -71,22 +71,10 @@ namespace OTB.Core
             ClientState._virtualX = s.VirtualX;
             ClientState._virtualY = s.VirtualY;
             if (s.Client != ClientState.ClientName) return;
-            //set this local client to have 0,0 coords. then update the other clients with the new virtual position.
+            //set this local client to have 0,0 coords. 
             ClientState._lastPositionX = 0;
             ClientState._lastPositionY = 0;
             _hook.Hook.SetMousePos(0, 0);
-            //TODO: does this still work without explicitly updating the server again?
-            //                    _hubConnection.InvokeAsync("MouseMove", _virtualX, _virtualY).ContinueWith(task1 =>
-            //                    {
-            //                        if (task1.IsFaulted)
-            //                        {
-            //                            Console.WriteLine("There was an error calling send: {0}", task1.Exception.GetBaseException());
-            //                        }
-            //                        else
-            //                        {
-            //
-            //                        }
-            //                    });
         }
 
         public async Task Clipboard(string value)
